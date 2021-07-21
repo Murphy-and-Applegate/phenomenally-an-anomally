@@ -5,6 +5,25 @@ import requests
 import numpy as np
 from datetime import timedelta, datetime
 
+def new_names(df):
+    '''
+    This function takes in the newly acquired curriculum logs and cohorts DataFrame, and renames columns to make them more user-friendly.
+    '''
+    
+    df.rename(columns = {'name': 'cohort', 'path':'endpoint'}, inplace = True)
+    
+    return df
+
+def program_feature(df):
+    '''
+    This function takes in the newly acquired curriculum logs and cohorts DataFrame, and creates a new column with cohort names.
+    '''
+    
+    #creating new feature which gives name instead of number.
+    df['program'] = df.program_id.replace([1,2,3,4], ['full_stack_php', 'java', 'data_science', 'front_end_program'])
+    
+    return df
+
 def index_reset(df):
     '''
     This function will take in our newly acquired curriculum logs and cohorts DataFrame, and combine the 'date' and 'time' columns into one 'dt' column that will be set as the index
@@ -63,6 +82,12 @@ def initial_prep(df):
     
     # drops null values
     df = df.dropna()
+    
+    # change column names
+    df = new_names(df)
+    
+    # create program names
+    df = program_feature(df)
     
     # writes updated file to csv
     df.to_csv('first_iteration_table.csv')
