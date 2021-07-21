@@ -82,26 +82,42 @@ def q2_prep(df):
     
     return df_1, df_2, df_3, df_4
 
-def add_mm_range(df):
+def add_math(df):
     '''
-    This functions takes in a pandas DataFrame after it has gone through q2_prep. It adds 'min', 'max', and 'range' columns and returns a pandas DataFrame that allows easy viewing of results for question 2, broken down by program.
+    This functions takes in a pandas DataFrame after it has gone through q2_prep. It adds 'min', 'max', and 'range' columns and returns a pandas DataFrame that allows easy viewing of results for question 2, broken down by program. It also runs the add_zscore function.
     '''
     # adds 'min' and 'max' cols for 'count' and 'cohort'
     df_a = pd.DataFrame(df.groupby(['endpoint'])['count'].agg(['min']))
     df_b = pd.DataFrame(df.groupby(['endpoint'])['cohort'].agg(['min']))
     df_c = pd.DataFrame(df.groupby(['endpoint'])['count'].agg(['max']))
     df_d = pd.DataFrame(df.groupby(['endpoint'])['cohort'].agg(['max']))
+    df_e = pd.DataFrame(df.groupby(['endpoint'])['count'].agg(['mean'])).round(2)
+    df_f = pd.DataFrame(df.groupby(['endpoint'])['count'].agg(['sum']))
     
     # merges into 1 DataFrame
     df_ab = pd.merge(df_a, df_b, how='left', on='endpoint')
     df_cd = pd.merge(df_c, df_d, how='left', on='endpoint')
+    df_ef = pd.merge(df_e, df_f, how='left', on='endpoint')
     df = pd.merge(df_ab, df_cd, how='left', on='endpoint')
+    df = pd.merge(df, df_ef, how='left', on='endpoint')
     
     # adds a 'range' column
     df['range'] = df['max_x']-df['min_x']
     df = df[df['min_x']>10].sort_values(by='range', ascending=False)
     
+    # add zscore
+    df = add_zscore(df)
+    
     return df
+
+def add_zscore(df):
+    
+    z_scores = pd.Series((df['sum'] - df['mean']) / df['sum'].std()).round(4)
+    df['zscore'] = z_scores
+    
+    df = df.sort_values(by='zscore', ascending=False)
+        
+    return df[df['zscore'] > 2.5]
 
 ############################ Question 6 Functions ########################################
 # What topics are grads continuing to reference after graduation and into their jobs (for each program)?
@@ -186,12 +202,7 @@ def q6_math(df):
     
     return df
 
-def add_zscore_cols(df):
-    
-    z_scores = pd.Series((df['sum'] - df['mean']) / df['sum'].std()).round(4)
-    df['zscore'] = z_scores
-        
-    return df
+
 
     
     
