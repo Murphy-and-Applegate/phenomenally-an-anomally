@@ -197,10 +197,42 @@ def q6_math(df):
     df['range'] = df['max']-df['min']
     df = df.sort_values(by='range', ascending=False)
     
-    # rename columns
-#     df = df.rename(columns={'min_x': 'min_count', 'max_x': 'max_count'})
+    # add zscore columns
+    df = add_zscore(df)
     
     return df
+
+def q6_prep(df):
+    '''
+    This function takes in a pandas DataFrame after going through the initial prep stages. It thens calls on the remove_home, grads_only, and q6_cols functions and returns a pandas DataFrame ready for splitting and further exploration for question 6.
+    '''
+    
+    # Use remove_home function
+    df = remove_home(df)
+    
+    # Only return entries where student has graduated
+    df = grads_only(df)
+    
+    # return only columns needed for q6
+    df = q6_cols(df)
+    
+    return df
+
+def q6_split(df):
+    '''
+    This function takes in a pandas Dataframe after going through my q6_prep function. It then calls on my split_by_program function, and endpoint_group function, to return 4 pandas DataFrames ready to answer question 6.
+    '''
+    
+    # split by program_id
+    df_1, df_2, df_3, df_4 = split_by_program(df)
+    
+    # create groups based on endpoint
+    df_1, df_2, df_3, df_4 = endpoint_group(df_1, df_2, df_3, df_4)
+    
+    return df_1, df_2, df_3, df_4
+    
+    
+    
 
 
 
