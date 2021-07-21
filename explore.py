@@ -106,12 +106,92 @@ def add_mm_range(df):
 ############################ Question 6 Functions ########################################
 # What topics are grads continuing to reference after graduation and into their jobs (for each program)?
 
+# Reacquire data
+# Redo initial_prep
 # Use remove_home function from q2
+# Remove all entries where 'end_date' > index
 # Use split_by_program function from q2
 # Create q3_cols function that keeps 'index', 'cohort', 'endpoint', 'end_date', 'program_id'
-# Remove all enties where 'end_date' > index
+
 # Split into 4 DataFrames, 1 for each program
-# 
+
+
+def q6_cols(df):
+    '''
+    This function takes in the result of my remove_home function, and returns a pandas DataFrame with 'endpoint', 'cohort', 'end_date', and 'program_id' as columns. All other variables are dropped since they are not needed for question 6.
+    '''
+    
+    df = df[['endpoint', 'cohort', 'end_date', 'program_id']]
+    
+    return df
+
+def grads_only(df):
+    '''
+    This function takes in the result of my q6_cols function, and only returns data where the index > end_date, (which means student has graduated.)
+    '''
+    
+    df = df[df.index > df.end_date]
+    
+    return df
+
+def add_mm_range_mean(df):
+    '''
+    This functions takes in a pandas DataFrame after it has gone through q2_prep. It adds 'min', 'max', and 'range' columns and returns a pandas DataFrame that allows easy viewing of results for question 2, broken down by program.
+    '''
+    # adds 'min' and 'max' cols for 'count' and 'cohort'
+    df_a = pd.DataFrame(df.groupby(['endpoint'])['count'].agg(['min']))
+    df_b = pd.DataFrame(df.groupby(['endpoint'])['cohort'].agg(['min']))
+    df_c = pd.DataFrame(df.groupby(['endpoint'])['count'].agg(['max']))
+    df_d = pd.DataFrame(df.groupby(['endpoint'])['cohort'].agg(['max']))
+    df_e = pd.DataFrame(df.groupby(['endpoint'])['count'].agg(['mean'])).round(2)
+    df_f = pd.DataFrame(df.groupby(['endpoint'])['count'].agg(['sum']))
+    
+    # merges into 1 DataFrame
+    df_ab = pd.merge(df_a, df_b, how='left', on='endpoint')
+    df_cd = pd.merge(df_c, df_d, how='left', on='endpoint')
+    df = pd.merge(df_ab, df_cd, how='left', on='endpoint')
+    df = pd.merge(df, df_e, how='left', on='endpoint')
+    df = pd.merge(df, df_f, how='left', on='endpoint')
+    
+    # adds a 'range' column
+    df['range'] = df['max_x']-df['min_x']
+    df = df.sort_values(by='range', ascending=False)
+    
+    # rename columns
+    df = df.rename(columns={'min_x': 'min_count', 'min_y': 'min_cohort', 'max_x': 'max_count', 'max_y': 'max_cohort'})
+    
+    return df
+
+def q6_math(df):
+    '''
+    This functions takes in a pandas DataFrame after it has gone through q6_prep. It adds 'min', 'max', 'sum', and 'range' columns and returns a pandas DataFrame that allows easy viewing of results for question 2, broken down by program.
+    '''
+    # adds 'min' and 'max' cols for 'count' and 'cohort'
+    df_a = pd.DataFrame(df.groupby(['endpoint'])['count'].agg(['min']))
+    df_b = pd.DataFrame(df.groupby(['endpoint'])['count'].agg(['max']))
+    df_c = pd.DataFrame(df.groupby(['endpoint'])['count'].agg(['mean'])).round(2)
+    df_d = pd.DataFrame(df.groupby(['endpoint'])['count'].agg(['sum']))
+    
+    # merges into 1 DataFrame
+    df_ab = pd.merge(df_a, df_b, how='left', on='endpoint')
+    df_cd = pd.merge(df_c, df_d, how='left', on='endpoint')
+    df = pd.merge(df_ab, df_cd, how='left', on='endpoint')
+    
+    # adds a 'range' column
+    df['range'] = df['max']-df['min']
+    df = df.sort_values(by='range', ascending=False)
+    
+    # rename columns
+#     df = df.rename(columns={'min_x': 'min_count', 'max_x': 'max_count'})
+    
+    return df
+
+def add_zscore_cols(df):
+    
+    z_scores = pd.Series((df['sum'] - df['mean']) / df['sum'].std()).round(4)
+    df['zscore'] = z_scores
+        
+    return df
 
     
     
