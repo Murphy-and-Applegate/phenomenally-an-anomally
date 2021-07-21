@@ -11,6 +11,8 @@ from IPython.display import display, display_html
 
 
 ############### Question 2 Functions #############################
+# Is there a cohort that referred to a lesson significantly more than other cohorts seemed to gloss over?
+
 
 def remove_home(df):
     '''
@@ -102,9 +104,14 @@ def add_mm_range(df):
     return df
 
 ############################ Question 6 Functions ########################################
+# What topics are grads continuing to reference after graduation and into their jobs (for each program)?
 
 # Use remove_home function from q2
 # Use split_by_program function from q2
+# Create q3_cols function that keeps 'index', 'cohort', 'endpoint', 'end_date', 'program_id'
+# Remove all enties where 'end_date' > index
+# Split into 4 DataFrames, 1 for each program
+# 
 
     
     
