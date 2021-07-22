@@ -153,6 +153,25 @@ def add_zscore(df):
         
     return df[df['zscore'] > 2.5]
 
+
+############################ Question 3 Functions #######################################
+
+def q3_prep(df):
+    '''
+    This function takes in a pandas DataFrame broken down by program, and returns a list of cohorts, and a list of users.
+    '''
+    # Cohort list
+    cohort_list = list(df.cohort.value_counts().index)
+    
+    # User list
+    user_list = list(df.user_id.value_counts().index)
+    
+    # Only returns data on current students
+    df = df[df.index <= df.end_date]
+    df = df[df.index > df.start_date]
+    
+    
+
 ############################ Question 6 Functions ########################################
 # What topics are grads continuing to reference after graduation and into their jobs (for each program)?
 
