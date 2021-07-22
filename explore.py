@@ -10,6 +10,40 @@ from IPython.display import display, display_html
 
 
 
+
+############## Question 1 Functions ############################
+
+def prep_one(df):
+    '''
+    This function takes in a newly split pandas DataFrame, removes the homepage as an 'endpoint' option, groups by 'cohort', gives a value count of 'endpoints', and a list of cohorts.
+    '''
+    # creates df grouped by cohort
+    cohort_df = pd.DataFrame(df[df.endpoint != '/'].groupby('cohort')['endpoint'].value_counts())
+    
+    # create a list of cohorts
+    cohort_list = list(df.cohort.value_counts().index)
+    
+    return cohort_df, cohort_list
+
+
+
+def print_one(df, cohort_list):
+    '''
+    This function takes in a newly split pandas DataFrame, and prints the 3 most frequent endpoints for each cohort.
+    '''
+    for cohort in cohort_list:
+        if cohort != 'Everglades':
+            max_list = []
+            df_cohort = pd.DataFrame(df[df.endpoint != '/'].groupby('cohort')['endpoint'].value_counts())
+            cep_df = df.loc[[cohort]]
+            #most_frequent = list(set(fsp_cohort.loc[[cohort]])
+            cep_df = cep_df.endpoint.nlargest(3)
+            print('-----------------')
+            print(cep_df)
+            print('-----------------')
+
+
+
 ############### Question 2 Functions #############################
 # Is there a cohort that referred to a lesson significantly more than other cohorts seemed to gloss over?
 
